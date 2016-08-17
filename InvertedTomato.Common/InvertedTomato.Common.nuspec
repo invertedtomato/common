@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>InvertedTomato.Common</id>
+    <title>InvertedTomato.Common</title>
+    <version>$version$</version>
+    <authors>InvertedTomato</authors>
+    <owners>InvertedTomato</owners>
+    <licenseUrl>https://github.com/invertedtomato/common/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/invertedtomato/common</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>Set of common tools for Inverted Tomato projects.</summary>
+    <description>Set of common tools for Inverted Tomato projects.</description>
+    <releaseNotes></releaseNotes>
+    <tags>a</tags>
+  </metadata>
+</package>
