@@ -3,18 +3,38 @@ using System.IO;
 
 namespace InvertedTomato.IO {
     /// <summary>
-    /// Writer for bit streams.
+    /// Write bits or groups of bits to a stream.
     /// </summary>
     public class BitWriter : IDisposable {
-        // Most significant BIT is on left of byte
-        // Most significant BYTE is last
+        // LEAST significant BIT is on the RIGHT of the byte
+        // LEAST significant BYTE is the FIRST in the stream
+        // MOST significant BIT is on the LEFT of the byte
+        // MOST significant BYTE is the LAST in the stream
 
+        /// <summary>
+        /// If disposed.
+        /// </summary>
         public bool IsDisposed { get; private set; }
+
+        /// <summary>
+        /// Underlying stream to output to.
+        /// </summary>
         private readonly Stream Output;
 
+        /// <summary>
+        /// The current byte being worked on.
+        /// </summary>
         private byte BufferValue;
+
+        /// <summary>
+        /// The current bit within the current byte being worked on next.
+        /// </summary>
         private byte BufferPosition;
 
+        /// <summary>
+        /// Standard instantiation.
+        /// </summary>
+        /// <param name="output"></param>
         public BitWriter(Stream output) {
             if (null == output) {
                 throw new ArgumentNullException("input");
@@ -22,69 +42,25 @@ namespace InvertedTomato.IO {
 
             Output = output;
         }
-
-        /// <summary>
-        /// Write a single bit.
-        /// </summary>
-        /// <param name="value"></param>
-        public void Write1(bool value) {
-            if (value) {
-                BufferValue |= (byte)(1 << 7 - BufferPosition);
-            }
-
-            Increment(1);
-        }
-
-        /// <summary>
-        /// Write bits from 8-bit buffer.
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="count">Number of bits to take,</param>
-        public void Write8(byte buffer, byte count) {
-            if (count > 8) {
-                throw new ArgumentOutOfRangeException("Count must be between 0 and 8, not " + count + ".", "count");
-            }
-
-            // Remove unwanted bits and align on right
-            buffer <<= 8 - count;
-            buffer >>= 8 - count;
-
-            while (count > 0) {
-                // Calculate size of chunk
-                var chunk = CalculateChunk(count);
-
-                // Add to byte
-                if (BufferPosition + count > 8) {
-                    BufferValue |= (byte)(buffer >> count - chunk);
-                } else {
-                    BufferValue |= (byte)(buffer << 8 - BufferPosition - chunk);
-                }
-
-                // Update length available
-                count -= chunk;
-
-                // Move position
-                Increment(chunk);
-            }
-        }
-
+        
         /// <summary>
         /// Write bits from 64-bit buffer
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="count">Number of bits to take,</param>
-        public void Write64(ulong buffer, byte count) {
+        public void Write(ulong buffer, byte count) {
             if (count > 64) {
                 throw new ArgumentOutOfRangeException("Count must be between 0 and 64, not " + count + ".", "count");
             }
 
-            // Remove unwanted bits and align on right
+            // Remove unwanted bits
             buffer <<= 64 - count;
             buffer >>= 64 - count;
-
+            
+            // While there are bits remaining
             while (count > 0) {
-                // Calculate size of chunk
-                var chunk = CalculateChunk(count);
+                // Calculate chunk size we're writing next - the number of bits remaining to be written, or the amount of space left in the buffer - whichever is least
+                var chunk = (byte)Math.Min(count, 8 - BufferPosition);
 
                 // Add to byte
                 if (BufferPosition + count > 8) {
@@ -97,26 +73,27 @@ namespace InvertedTomato.IO {
                 count -= chunk;
 
                 // Move position
-                Increment(chunk);
-            }
-        }
-        
-        private void Increment(byte offset) {
-            // Increment position
-            BufferPosition += offset;
+                BufferPosition += chunk;
 
-            // If buffer is full...
-            if (BufferPosition == 8) {
-                WriteBuffer();
-            } else if (BufferPosition > 8) {
-                throw new Exception("Invalid position " + BufferPosition + ". Position has been offset by an incorrect value.");
+                // If buffer is full...
+                if (BufferPosition == 8) {
+                    // Write buffer
+                    Flush();
+                }
+
+#if DEBUG
+                // Catch insane situation
+                if (BufferPosition > 8) {
+                    throw new Exception("Invalid position " + BufferPosition + ". Position has been offset by an incorrect value.");
+                }
+#endif
             }
         }
 
         /// <summary>
         /// Flush current byte from buffer
         /// </summary>
-        private void WriteBuffer() {
+        private void Flush() {
             // Abort flush if there's nothing to flush
             if (BufferPosition == 0) {
                 return;
@@ -132,10 +109,6 @@ namespace InvertedTomato.IO {
             BufferPosition = 0;
         }
 
-        private byte CalculateChunk(byte max) {
-            return (byte)Math.Min(max, 8 - BufferPosition);
-        }
-
         protected virtual void Dispose(bool disposing) {
             if (IsDisposed) {
                 return;
@@ -144,7 +117,7 @@ namespace InvertedTomato.IO {
 
             if (disposing) {
                 // Flush buffer
-                WriteBuffer();
+                Flush();
 
                 // Dispose managed state (managed objects).
             }

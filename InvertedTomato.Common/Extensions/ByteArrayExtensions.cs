@@ -1,18 +1,9 @@
 ﻿using System;
 using System.Text;
+using System.Linq;
 
 namespace InvertedTomato {
 	public static class ByteArrayExtensions {
-		/// <summary>
-		/// Byte comparison with another array.
-		/// </summary>
-		/// <param name="target"></param>
-		/// <param name="other"></param>
-		/// <returns></returns>
-		public static bool Equals(this byte[] target, byte[] other) {
-			return ArrayUtility.Compare(target, other);
-		}
-
 		/// <summary>
 		/// Convert to string with default encoding.
 		/// </summary>
@@ -26,12 +17,25 @@ namespace InvertedTomato {
 			return System.Text.Encoding.Default.GetString(target);
 		}
 
-		/// <summary>
-		/// Convert to hex string.
-		/// </summary>
-		/// <param name="target"></param>
-		/// <returns></returns>
-		public static string ToHexString(this byte[] target) {
+        /// <summary>
+        /// Convert to binary string
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static string ToBinaryString(this byte[] target) {
+            if (null == target) {
+                throw new ArgumentNullException("target");
+            }
+            
+            return string.Join(" ", target.Select(a => Convert.ToString(a, 2).PadLeft(8, '0')));
+        }
+
+        /// <summary>
+        /// Convert to hex string.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static string ToHexString(this byte[] target) {
 			if (null == target) {
 				throw new ArgumentNullException("target");
 			}
@@ -66,8 +70,20 @@ namespace InvertedTomato {
 
 			return Array.IndexOf(target, needle, startIndex);
 		}
-
-		public static ulong ToUInt64(this byte[] target) {
+        
+        /// <summary>
+        /// Byte comparison with another array.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        [Obsolete("Anti-pattern - will be removed in future release.")]
+        public static bool Equals(this byte[] target, byte[] other) {
+            return ArrayUtility.Compare(target, other);
+        }
+        
+        [Obsolete("Anti-pattern - will be removed in future release.")]
+        public static ulong ToUInt64(this byte[] target) {
 			if (null == target) {
 				throw new ArgumentNullException("target");
 			}
@@ -75,8 +91,9 @@ namespace InvertedTomato {
 			ulong value = BitConverter.ToUInt64(target, 0);
 			return value;
 		}
-
-		public static uint ToUInt32(this byte[] target) {
+        
+        [Obsolete("Anti-pattern - will be removed in future release.")]
+        public static uint ToUInt32(this byte[] target) {
 			if (null == target) {
 				throw new ArgumentNullException("target");
 			}
@@ -85,7 +102,8 @@ namespace InvertedTomato {
 			return value;
 		}
 
-		public static ushort ToUInt16(this byte[] target) {
+        [Obsolete("Anti-pattern - will be removed in future release.")]
+        public static ushort ToUInt16(this byte[] target) {
 			if (null == target) {
 				throw new ArgumentNullException("target");
 			}

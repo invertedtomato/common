@@ -54,6 +54,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Extensions\ByteArrayExtensionTests.cs" />
     <Compile Include="IO\BitReaderTests.cs" />
     <Compile Include="IO\BitWriterTests.cs" />
     <Compile Include="IO\BitsTests.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="Utilities\EmailAddressUtilityTest.cs" />
     <Compile Include="Utilities\GuidUtilityTest.cs" />
     <Compile Include="Utilities\IPEndPointUtilityTests.cs" />
+    <Compile Include="Utilities\ByteArrayUtilityTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\InvertedTomato.Common\InvertedTomato.Common.csproj">
@@ -72,9 +74,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

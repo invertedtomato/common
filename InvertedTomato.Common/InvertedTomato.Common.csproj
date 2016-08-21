@@ -60,6 +60,7 @@
     <Compile Include="Extensions\ThreadExtensions.cs" />
     <Compile Include="Extensions\TimerExtensions.cs" />
     <Compile Include="IO\BitReader.cs" />
+    <Compile Include="Utilities\ByteArrayUtility.cs" />
     <Compile Include="IO\BitWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Testable\Sockets\ISocket.cs" />
