@@ -1,4 +1,6 @@
-﻿namespace InvertedTomato.IO {
+﻿using System;
+
+namespace InvertedTomato.IO {
     /// <summary>
     /// Tools for managing bit sets.
     /// </summary>
@@ -17,6 +19,42 @@
             } while (value > 0);
 
             return bits;
+        }
+
+        public static ulong Push(ulong host, ulong add, byte count) {
+            if (count > 64) {
+                throw new ArgumentOutOfRangeException("Must be between 0 and 64, not " + count + ".", "count");
+            }
+
+            // Remove unwanted bits
+            add <<= 64 - count;
+            add >>= 64 - count;
+
+            // Make room on host
+            host <<= count;
+
+            // Add the bits
+            host |= add;
+
+            return host;
+        }
+
+        public static ulong Pop(ulong host, byte count) {
+            if (count > 64) {
+                throw new ArgumentOutOfRangeException("Must be between 0 and 64, not " + count + ".", "count");
+            }
+
+            // Create mask
+            var mask = ulong.MaxValue;
+            mask >>= 64 - count;
+
+            // Extract
+            var remove = host & mask;
+
+            // Remove from host
+            host >>= count;
+
+            return remove;
         }
 
         /// <summary>

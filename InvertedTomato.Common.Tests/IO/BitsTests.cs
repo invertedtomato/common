@@ -52,15 +52,42 @@ namespace InvertedTomato.Common.Tests.IO {
 
         [TestMethod]
         public void CountUsed_0() {
-            Assert.AreEqual(1, Bits.CountUsed(0));
+            Assert.AreEqual((ulong)1, Bits.CountUsed(0));
         }
         [TestMethod]
         public void CountUsed_1() {
-            Assert.AreEqual(1, Bits.CountUsed(1));
+            Assert.AreEqual((ulong)1, Bits.CountUsed(1));
         }
         [TestMethod]
         public void CountUsed_3() {
-            Assert.AreEqual(2, Bits.CountUsed(3));
+            Assert.AreEqual((ulong)2, Bits.CountUsed(3));
+        }
+
+
+        [TestMethod]
+        public void Push_0_1_1() {
+            Assert.AreEqual((ulong)1,Bits.Push(0, 1, 1));
+        }
+        [TestMethod]
+        public void Push_1_1_1() {
+            Assert.AreEqual((ulong)3, Bits.Push(1, 1, 1));
+        }
+        [TestMethod]
+        public void Push_1_3_1() {
+            Assert.AreEqual((ulong)3, Bits.Push(1, 3, 1));
+        }
+        [TestMethod]
+        public void Push_1_3_2() {
+            Assert.AreEqual((ulong)7, Bits.Push(1, 3, 2));
+        }
+
+        [TestMethod]
+        public void Pop_0_1() {
+            Assert.AreEqual((ulong)0, Bits.Pop(0, 1));
+        }
+        [TestMethod]
+        public void Pop_3_1() {
+            Assert.AreEqual((ulong)1, Bits.Pop(3, 1));
         }
     }
 }
