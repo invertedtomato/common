@@ -42,6 +42,18 @@ namespace InvertedTomato.IO {
             return string.Join(" ", input.Select(a => Convert.ToString(a, 2).PadLeft(8, '0')));
         }
 
+        public static string ToString(byte value) {
+            return ToString(BitConverter.GetBytes(value));
+        }
+
+        public static string ToString(int value) {
+            return ToString(BitConverter.GetBytes(value));
+        }
+
+        public static string ToString(long value) {
+            return ToString(BitConverter.GetBytes(value));
+        }
+
         /// <summary>
         /// Count the number of bits used to express number.
         /// </summary>
