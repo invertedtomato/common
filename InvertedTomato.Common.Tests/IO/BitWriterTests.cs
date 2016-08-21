@@ -21,9 +21,9 @@ namespace InvertedTomato.Common.Tests.IO {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BitWriter(stream)) {
 
-                    writer.Write8(value1, length1, 0);
+                    writer.Write8(value1, length1);
                     if (length2 > 0) {
-                        writer.Write8(value2, length2, 0);
+                        writer.Write8(value2, length2);
                     }
 
                 }
@@ -35,9 +35,9 @@ namespace InvertedTomato.Common.Tests.IO {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BitWriter(stream)) {
 
-                    writer.Write64(value1, length1, 0);
+                    writer.Write64(value1, length1);
                     if (length2 > 0) {
-                        writer.Write64(value2, length2, 0);
+                        writer.Write64(value2, length2);
                     }
 
                 }

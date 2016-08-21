@@ -2,6 +2,9 @@
 using System.IO;
 
 namespace InvertedTomato.IO {
+    /// <summary>
+    /// Writer for bit streams.
+    /// </summary>
     public class BitWriter : IDisposable {
         // Most significant BIT is on left of byte
         // Most significant BYTE is last
@@ -37,18 +40,14 @@ namespace InvertedTomato.IO {
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="count">Number of bits to take,</param>
-        /// <param name="offset">Number of bits to ignore.</param>
-        public void Write8(byte buffer, byte count, byte offset) {
-            if (offset >= 8) {
-                throw new ArgumentOutOfRangeException("Offset must be between 0 and 7, not " + offset + ".", "offset");
-            }
+        public void Write8(byte buffer, byte count) {
             if (count > 8) {
                 throw new ArgumentOutOfRangeException("Count must be between 0 and 8, not " + count + ".", "count");
             }
 
             // Remove unwanted bits and align on right
             buffer <<= 8 - count;
-            buffer >>= offset + 8 - count;
+            buffer >>= 8 - count;
 
             while (count > 0) {
                 // Calculate size of chunk
@@ -74,18 +73,14 @@ namespace InvertedTomato.IO {
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="count">Number of bits to take,</param>
-        /// <param name="offset">Number of bits to ignore.</param>
-        public void Write64(ulong buffer, byte count, byte offset) {
-            if (offset >= 64) {
-                throw new ArgumentOutOfRangeException("Offset must be between 0 and 63, not " + offset + ".", "offset");
-            }
+        public void Write64(ulong buffer, byte count) {
             if (count > 64) {
                 throw new ArgumentOutOfRangeException("Count must be between 0 and 64, not " + count + ".", "count");
             }
 
             // Remove unwanted bits and align on right
             buffer <<= 64 - count;
-            buffer >>= offset + 64 - count;
+            buffer >>= 64 - count;
 
             while (count > 0) {
                 // Calculate size of chunk
@@ -105,20 +100,28 @@ namespace InvertedTomato.IO {
                 Increment(chunk);
             }
         }
-
+        
         private void Increment(byte offset) {
             // Increment position
             BufferPosition += offset;
 
             // If buffer is full...
             if (BufferPosition == 8) {
-                Write();
+                WriteBuffer();
             } else if (BufferPosition > 8) {
                 throw new Exception("Invalid position " + BufferPosition + ". Position has been offset by an incorrect value.");
             }
         }
 
-        private void Write() {
+        /// <summary>
+        /// Flush current byte from buffer
+        /// </summary>
+        private void WriteBuffer() {
+            // Abort flush if there's nothing to flush
+            if (BufferPosition == 0) {
+                return;
+            }
+
             // Flush buffer
             Output.WriteByte(BufferValue);
 
@@ -140,9 +143,8 @@ namespace InvertedTomato.IO {
             IsDisposed = true;
 
             if (disposing) {
-                if (BufferPosition > 0) {
-                    Write();
-                }
+                // Flush buffer
+                WriteBuffer();
 
                 // Dispose managed state (managed objects).
             }

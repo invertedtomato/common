@@ -3,6 +3,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace InvertedTomato.IO {
+    /// <summary>
+    /// Tools for managing bits.
+    /// </summary>
     public static class Bits {
         private static Regex Binary = new Regex("^([01]{8})+$");
 
@@ -42,15 +45,30 @@ namespace InvertedTomato.IO {
             return string.Join(" ", input.Select(a => Convert.ToString(a, 2).PadLeft(8, '0')));
         }
 
+        /// <summary>
+        /// Convert a byte into a binary string.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static string ToString(byte value) {
+            return Convert.ToString(value, 2).PadLeft(8, '0'); // This is required, otherwise BitConverter.GetBytes will cast to ushort
+        }
+
+        /// <summary>
+        /// Convert a uint to a binary string.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string ToString(uint value) {
             return ToString(BitConverter.GetBytes(value));
         }
 
-        public static string ToString(int value) {
-            return ToString(BitConverter.GetBytes(value));
-        }
-
-        public static string ToString(long value) {
+        /// <summary>
+        /// Convert a ulong to a binary string.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string ToString(ulong value) {
             return ToString(BitConverter.GetBytes(value));
         }
 
