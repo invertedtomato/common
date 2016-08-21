@@ -19,8 +19,8 @@ namespace InvertedTomato.IO {
 
             Input = input;
         }
-
-        public ulong Read(byte count) {
+        
+        public bool TryRead(out ulong result, byte count) {
             if (count > 64) {
                 throw new ArgumentOutOfRangeException("Count must be between 0 and 64, not " + count + ".", "count");
             }
@@ -28,11 +28,11 @@ namespace InvertedTomato.IO {
                 throw new ObjectDisposedException("this");
             }
 
-            ulong result = 0;
+            result = 0;
 
             while (count > 0) {
                 // If needed, load byte
-                ReadBufferIfNeeded();
+                TryReadBuffer();
 
                 // Calculate chunk size
                 var chunk = (byte)Math.Min(count, 8 - BufferPosition);
@@ -55,21 +55,43 @@ namespace InvertedTomato.IO {
                 BufferPosition += chunk;
             }
 
-            return result;
+            return true;
+        }
+
+        public ulong Read(byte count) {
+            ulong value;
+            if (!TryRead(out value, count)) {
+                throw new EndOfStreamException();
+            }
+
+            return value;
+        }
+
+        public bool TryPeakBit(out bool value) {
+            // If needed, load byte
+            if (!TryReadBuffer()) {
+                value = false;
+                return false;
+            }
+
+            // Return bit
+            value = (BufferValue & (1 << 7 - BufferPosition)) > 0;
+            return true;
         }
 
         public bool PeakBit() {
-            // If needed, load byte
-            ReadBufferIfNeeded();
+            bool value;
+            if (!TryPeakBit(out value)) {
+                throw new EndOfStreamException();
+            }
 
-            // Return bit
-            return (BufferValue & (1 << 7 - BufferPosition)) > 0;
+            return value;
         }
 
-        private void ReadBufferIfNeeded() {
+        private bool TryReadBuffer() {
             // Only load if needed
             if (BufferPosition < 8) {
-                return;
+                return true;
             } else if (BufferPosition > 8) {
                 throw new Exception("Invalid position " + BufferPosition + ". Position has been offset by an incorrect value.");
             }
@@ -77,12 +99,14 @@ namespace InvertedTomato.IO {
             // Read next byte
             var buffer = Input.ReadByte();
             if (buffer < 0) {
-                throw new EndOfStreamException();
+                return false;
             }
             BufferValue = (byte)buffer;
 
             // Reset position
             BufferPosition = 0;
+
+            return true;
         }
 
 
