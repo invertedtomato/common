@@ -52,6 +52,9 @@ namespace InvertedTomato.IO {
             if (count > 64) {
                 throw new ArgumentOutOfRangeException("Count must be between 0 and 64, not " + count + ".", "count");
             }
+            if (IsDisposed) {
+                throw new ObjectDisposedException("this");
+            }
 
             // Remove unwanted bits
             buffer <<= 64 - count;

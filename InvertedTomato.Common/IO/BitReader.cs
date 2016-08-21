@@ -24,6 +24,9 @@ namespace InvertedTomato.IO {
             if (count > 64) {
                 throw new ArgumentOutOfRangeException("Count must be between 0 and 64, not " + count + ".", "count");
             }
+            if (IsDisposed) {
+                throw new ObjectDisposedException("this");
+            }
 
             ulong result = 0;
 
@@ -81,7 +84,7 @@ namespace InvertedTomato.IO {
             // Reset position
             BufferPosition = 0;
         }
-        
+
 
         protected virtual void Dispose(bool disposing) {
             if (IsDisposed) {
