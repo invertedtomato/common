@@ -21,20 +21,16 @@ namespace InvertedTomato.IO {
             return bits;
         }
 
-        public static ulong Push(ulong host, ulong add, byte count) {
+        public static ulong Push(ulong host, ulong bits, byte count) {
             if (count > 64) {
                 throw new ArgumentOutOfRangeException("Must be between 0 and 64, not " + count + ".", "count");
             }
 
-            // Remove unwanted bits
-            add <<= 64 - count;
-            add >>= 64 - count;
-
-            // Make room on host
+            // Add space on host
             host <<= count;
-
-            // Add the bits
-            host |= add;
+            
+            // Add bits
+            host |= bits & (ulong.MaxValue >> 64 - count);
 
             return host;
         }
@@ -43,18 +39,14 @@ namespace InvertedTomato.IO {
             if (count > 64) {
                 throw new ArgumentOutOfRangeException("Must be between 0 and 64, not " + count + ".", "count");
             }
+            
+            // Extract bits
+            var bits = host & (ulong.MaxValue >> 64 - count);
 
-            // Create mask
-            var mask = ulong.MaxValue;
-            mask >>= 64 - count;
-
-            // Extract
-            var remove = host & mask;
-
-            // Remove from host
+            // Remove space from host
             host >>= count;
 
-            return remove;
+            return bits;
         }
 
         /// <summary>
