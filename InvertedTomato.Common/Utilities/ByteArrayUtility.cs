@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace InvertedTomato.Utilities {
     public static class ByteArrayUtility {
-        private static Regex Binary = new Regex("^([01]{8})+$");
+        private static Regex Binary = new Regex("^([01]{8})*$");
 
         /// <summary>
         /// Parse a binary string into a byte array.

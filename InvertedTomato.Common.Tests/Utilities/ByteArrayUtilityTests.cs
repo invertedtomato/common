@@ -6,6 +6,11 @@ namespace InvertedTomato.Common.Tests.Utilities {
     [TestClass]
     public class ByteArrayUtilityTests {
         [TestMethod]
+        public void ParseBinaryString_() {
+            var result = ByteArrayUtility.ParseBinaryString("");
+            Assert.AreEqual(0, result.Length);
+        }
+        [TestMethod]
         public void ParseBinaryString_00000000() {
             var result = ByteArrayUtility.ParseBinaryString("00000000");
             Assert.AreEqual(1, result.Length);
