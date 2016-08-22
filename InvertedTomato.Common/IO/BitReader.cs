@@ -32,7 +32,9 @@ namespace InvertedTomato.IO {
 
             while (count > 0) {
                 // If needed, load byte
-                TryReadBuffer();
+                if (!TryReadBuffer()) {
+                    return false;
+                }
 
                 // Calculate chunk size
                 var chunk = (byte)Math.Min(count, 8 - BufferPosition);

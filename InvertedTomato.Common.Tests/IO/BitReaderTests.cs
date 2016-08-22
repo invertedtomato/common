@@ -13,7 +13,7 @@ namespace InvertedTomato.Common.Tests.IO {
             using (var stream = new MemoryStream(ByteArrayUtility.ParseBinaryString(value))) {
                 using (var reader = new BitReader(stream)) {
                     for (var i = 0; i < value.Replace(" ", "").Length / length; i++) {
-                        yield return Bits.ToString(reader.Read(length),length);
+                        yield return Bits.ToString(reader.Read(length), length);
                     }
                 }
             }
@@ -37,7 +37,7 @@ namespace InvertedTomato.Common.Tests.IO {
         }
         [TestMethod]
         public void Read_1() {
-            var result = Read("01000000 10000000",1);
+            var result = Read("01000000 10000000", 1);
             Assert.AreEqual("0", result.ElementAt(0));
             Assert.AreEqual("1", result.ElementAt(1));
             Assert.AreEqual("0", result.ElementAt(2));
@@ -71,11 +71,22 @@ namespace InvertedTomato.Common.Tests.IO {
         }
 
         [TestMethod]
+        [ExpectedException(typeof(EndOfStreamException))]
+        public void Read_EndOfStream() {
+            using (var stream = new MemoryStream(ByteArrayUtility.ParseBinaryString("00000000"))) {
+                using (var reader = new BitReader(stream)) {
+                    reader.Read(6);
+                    reader.Read(6);
+                }
+            }
+        }
+
+        [TestMethod]
         public void ReadWrite() {
-            using(var stream = new MemoryStream()) {
-                using(var writer = new BitWriter(stream)) {
-                    for (ulong i = 1; i < ulong.MaxValue/2; i *= 2) {
-                        writer.Write(i,Bits.CountUsed(i));
+            using (var stream = new MemoryStream()) {
+                using (var writer = new BitWriter(stream)) {
+                    for (ulong i = 1; i < ulong.MaxValue / 2; i *= 2) {
+                        writer.Write(i, Bits.CountUsed(i));
                     }
                 }
 
