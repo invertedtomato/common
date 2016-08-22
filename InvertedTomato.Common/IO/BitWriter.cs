@@ -44,10 +44,10 @@ namespace InvertedTomato.IO {
         }
         
         /// <summary>
-        /// Write bits from 64-bit buffer
+        /// Write a set of bits. This uses ulong as a 64-bit buffer (don't think of it like an integer, think of it as a bit buffer).
         /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="count">Number of bits to take,</param>
+        /// <param name="buffer">Buffer to write from.</param>
+        /// <param name="count">Number of bits to write, starting from the least-significant-bit (right side).</param>
         public void Write(ulong buffer, byte count) {
             if (count > 64) {
                 throw new ArgumentOutOfRangeException("Count must be between 0 and 64, not " + count + ".", "count");
