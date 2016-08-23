@@ -43,9 +43,6 @@ namespace InvertedTomato.IO {
             Output = output;
         }
 
-        [Obsolete("Will be removed in future release.")]
-        public void Write(ulong buffer, byte count) { Write(buffer, (int)count); }
-
         /// <summary>
         /// Write a set of bits. This uses ulong as a 64-bit buffer (don't think of it like an integer, think of it as a bit buffer).
         /// </summary>

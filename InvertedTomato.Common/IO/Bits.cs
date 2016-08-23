@@ -10,7 +10,7 @@ namespace InvertedTomato.IO {
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static byte CountUsed(ulong value) {
+        public static int CountUsed(ulong value) {
             byte bits = 0;
 
             do {
@@ -20,9 +20,6 @@ namespace InvertedTomato.IO {
 
             return bits;
         }
-
-        [Obsolete("Will be removed in a future release.")]
-        public static ulong Push(ulong host, ulong bits, byte count) { return Push(host, bits, (int)count); }
 
         /// <summary>
         /// Push bits onto the least-significant side of a ulong.
@@ -44,9 +41,6 @@ namespace InvertedTomato.IO {
 
             return host;
         }
-
-        [Obsolete("Will be removed in a future release.")]
-        public static ulong Pop(ulong host, byte count) { return Pop(host, (int)count); }
 
         /// <summary>
         /// Pop bits off the least-significant side of a ulong.
@@ -76,8 +70,6 @@ namespace InvertedTomato.IO {
         public static string ToString(ulong value) {
             return ToString(value, 1);
         }
-
-        public static string ToString(ulong value, byte minBits) { return ToString(value, (int)minBits); }
 
         /// <summary>
         /// Convert a ulong to a binary string. No byte reordering - the MSB is always on the left, LSB is always on the right. A space between bytes. Padding only if required to meet minBits.

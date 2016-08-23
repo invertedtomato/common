@@ -38,9 +38,6 @@ namespace InvertedTomato.IO {
             Input = input;
         }
 
-        [Obsolete("Will be removed in a future release.")]
-        public ulong Read(byte count) { return Read((int)count); }
-
         /// <summary>
         /// Read a set of bits. This uses ulong as a 64-bit buffer (don't think of it like an integer, think of it as a bit buffer).
         /// </summary>
