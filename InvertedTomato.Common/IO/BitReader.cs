@@ -6,7 +6,14 @@ namespace InvertedTomato.IO {
     /// Read bits or groups of bits from stream.
     /// </summary>
     public class BitReader : IDisposable {
+        /// <summary>
+        /// If the reader is disposed.
+        /// </summary>
         public bool IsDisposed { get; private set; }
+
+        /// <summary>
+        /// Underlying input stream.
+        /// </summary>
         private readonly Stream Input;
 
         /// <summary>
@@ -15,10 +22,14 @@ namespace InvertedTomato.IO {
         private byte BufferValue;
 
         /// <summary>
-        /// Position within the currently buffered byte.
+        /// Position within the currently buffered byte. Defaulted to the end of the buffer to force a new byte to be read on the next request.
         /// </summary>
         private byte BufferPosition = 8;
 
+        /// <summary>
+        /// Standard instantiation.
+        /// </summary>
+        /// <param name="input"></param>
         public BitReader(Stream input) {
             if (null == input) {
                 throw new ArgumentNullException("input");
@@ -40,34 +51,33 @@ namespace InvertedTomato.IO {
                 throw new ObjectDisposedException("this");
             }
 
-            ulong result = 0;
+            ulong output = 0;
 
+            // While there is still bits being read
             while (count > 0) {
                 // If needed, load byte
                 PrepareBuffer();
 
-                // Calculate chunk size
-                var chunk = (byte)Math.Min(count, 8 - BufferPosition);
+                // Calculate number of bits to write in this cycle
+                var chunkSize = (byte)Math.Min(count, 8 - BufferPosition);
 
-                // Create mask
-                var bufferMask = byte.MaxValue;
-                bufferMask <<= 8 - chunk;
-                bufferMask >>= BufferPosition;
+                // Make room in output for this number of bits
+                output <<= chunkSize;
 
-                // Make room in output
-                result <<= chunk;
+                // Add bit to output
+                var mask = byte.MaxValue;
+                mask <<= 8 - chunkSize;
+                mask >>= BufferPosition;
+                output |= (ulong)(BufferValue & mask) >> 8 - chunkSize - BufferPosition;
 
-                // Add bits
-                result |= (ulong)(BufferValue & bufferMask) >> 8 - chunk - BufferPosition;
+                // Reduce number of bits remaining to be written
+                count -= chunkSize;
 
-                // Reduce count by number of retrieved bits
-                count -= chunk;
-
-                // Increment position
-                BufferPosition += chunk;
+                // Increment position in buffer by the number of bits just retrieved
+                BufferPosition += chunkSize;
             }
 
-            return result;
+            return output;
         }
         
         /// <summary>
@@ -75,15 +85,19 @@ namespace InvertedTomato.IO {
         /// </summary>
         /// <returns></returns>
         public bool PeakBit() {
+            if (IsDisposed) {
+                throw new ObjectDisposedException("this");
+            }
+
             // If needed, load byte
             PrepareBuffer();
 
-            // Return bit
+            // Return bit from buffer
             return (BufferValue & (1 << 7 - BufferPosition)) > 0;
         }
 
         private void PrepareBuffer() {
-            // Only load if needed
+            // If there are still unused bits in the buffer, do nothing
             if (BufferPosition < 8) {
                 return;
             }
@@ -95,18 +109,17 @@ namespace InvertedTomato.IO {
             }
 #endif
 
-            // Read next byte
+            // Read next byte into buffer
             var buffer = Input.ReadByte();
             if (buffer < 0) {
                 throw new EndOfStreamException();
             }
             BufferValue = (byte)buffer;
 
-            // Reset position
+            // Reset buffer position to the start
             BufferPosition = 0;
         }
-
-
+        
         protected virtual void Dispose(bool disposing) {
             if (IsDisposed) {
                 return;
