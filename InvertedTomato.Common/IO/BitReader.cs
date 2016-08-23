@@ -58,7 +58,7 @@ namespace InvertedTomato.IO {
                 // If needed, load byte
                 PrepareBuffer();
 
-                // Calculate number of bits to write in this cycle
+                // Calculate number of bits to read in this cycle - either the number of bits being requested, or the number of bits left in the buffer, whichever is less
                 var chunkSize = (byte)Math.Min(count, 8 - BufferPosition);
 
                 // Make room in output for this number of bits

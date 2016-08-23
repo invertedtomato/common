@@ -62,25 +62,25 @@ namespace InvertedTomato.IO {
             
             // While there are bits remaining
             while (count > 0) {
-                // Calculate chunk size we're writing next - the number of bits remaining to be written, or the amount of space left in the buffer - whichever is least
-                var chunk = (byte)Math.Min(count, 8 - BufferPosition);
+                // Calculate number of bits to write in this cycle - either the number of bits being requested, or the number of bits available in the buffer, whichever is less
+                var chunkSize = (byte)Math.Min(count, 8 - BufferPosition);
 
-                // Add to byte
+                // Add bits to buffer
                 if (BufferPosition + count > 8) {
-                    BufferValue |= (byte)(buffer >> count - chunk);
+                    BufferValue |= (byte)(buffer >> count - chunkSize);
                 } else {
-                    BufferValue |= (byte)(buffer << 8 - BufferPosition - chunk);
+                    BufferValue |= (byte)(buffer << 8 - BufferPosition - chunkSize);
                 }
 
-                // Update length available
-                count -= chunk;
+                // Reduce number of bits remaining to be written
+                count -= chunkSize;
 
-                // Move position
-                BufferPosition += chunk;
+                // Increment position in the buffer
+                BufferPosition += chunkSize;
 
                 // If buffer is full...
                 if (BufferPosition == 8) {
-                    // Write buffer
+                    // Flush buffer
                     Flush();
                 }
 
@@ -92,12 +92,9 @@ namespace InvertedTomato.IO {
 #endif
             }
         }
-
-        /// <summary>
-        /// Flush current byte from buffer
-        /// </summary>
+        
         private void Flush() {
-            // Abort flush if there's nothing to flush
+            // Abort flush if buffer is empty
             if (BufferPosition == 0) {
                 return;
             }
@@ -108,7 +105,7 @@ namespace InvertedTomato.IO {
             // Clear buffer
             BufferValue = 0;
 
-            // Reset position
+            // Reset buffer position
             BufferPosition = 0;
         }
 
@@ -122,7 +119,7 @@ namespace InvertedTomato.IO {
                 // Flush buffer
                 Flush();
 
-                // Dispose managed state (managed objects).
+                // Dispose managed state (managed objects)
             }
         }
 
