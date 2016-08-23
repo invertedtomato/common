@@ -9,7 +9,14 @@ namespace InvertedTomato.IO {
         public bool IsDisposed { get; private set; }
         private readonly Stream Input;
 
+        /// <summary>
+        /// Currently buffered byte being worked on.
+        /// </summary>
         private byte BufferValue;
+
+        /// <summary>
+        /// Position within the currently buffered byte.
+        /// </summary>
         private byte BufferPosition = 8;
 
         public BitReader(Stream input) {
@@ -19,14 +26,13 @@ namespace InvertedTomato.IO {
 
             Input = input;
         }
-
+        
         /// <summary>
         /// Read a set of bits. This uses ulong as a 64-bit buffer (don't think of it like an integer, think of it as a bit buffer).
         /// </summary>
-        /// <param name="buffer">Buffer to retrieve bits into.</param>
         /// <param name="count">Number of bits to read, starting from the least-significant-bit (right side).</param>
         /// <returns></returns>
-        public bool TryRead(out ulong buffer, byte count) {
+        public ulong Read(byte count) {
             if (count > 64) {
                 throw new ArgumentOutOfRangeException("Count must be between 0 and 64, not " + count + ".", "count");
             }
@@ -34,13 +40,11 @@ namespace InvertedTomato.IO {
                 throw new ObjectDisposedException("this");
             }
 
-            buffer = 0;
+            ulong result = 0;
 
             while (count > 0) {
                 // If needed, load byte
-                if (!TryReadBuffer()) {
-                    return false;
-                }
+                PrepareBuffer();
 
                 // Calculate chunk size
                 var chunk = (byte)Math.Min(count, 8 - BufferPosition);
@@ -51,10 +55,10 @@ namespace InvertedTomato.IO {
                 bufferMask >>= BufferPosition;
 
                 // Make room in output
-                buffer <<= chunk;
+                result <<= chunk;
 
                 // Add bits
-                buffer |= (ulong)(BufferValue & bufferMask) >> 8 - chunk - BufferPosition;
+                result |= (ulong)(BufferValue & bufferMask) >> 8 - chunk - BufferPosition;
 
                 // Reduce count by number of retrieved bits
                 count -= chunk;
@@ -63,72 +67,43 @@ namespace InvertedTomato.IO {
                 BufferPosition += chunk;
             }
 
-            return true;
+            return result;
         }
-
-        /// <summary>
-        /// Read a set of bits. This uses ulong as a 64-bit buffer (don't think of it like an integer, think of it as a bit buffer).
-        /// </summary>
-        /// <param name="count">Number of bits to read, starting from the least-significant-bit (right side).</param>
-        /// <returns></returns>
-        public ulong Read(byte count) {
-            ulong value;
-            if (!TryRead(out value, count)) {
-                throw new EndOfStreamException();
-            }
-
-            return value;
-        }
-
-        /// <summary>
-        /// Try and view the next bit without moving the pointer.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public bool TryPeakBit(out bool value) {
-            // If needed, load byte
-            if (!TryReadBuffer()) {
-                value = false;
-                return false;
-            }
-
-            // Return bit
-            value = (BufferValue & (1 << 7 - BufferPosition)) > 0;
-            return true;
-        }
-
+        
         /// <summary>
         /// View the next bit without moving the underlying pointer.
         /// </summary>
         /// <returns></returns>
         public bool PeakBit() {
-            bool value;
-            if (!TryPeakBit(out value)) {
-                throw new EndOfStreamException();
-            }
+            // If needed, load byte
+            PrepareBuffer();
 
-            return value;
+            // Return bit
+            return (BufferValue & (1 << 7 - BufferPosition)) > 0;
         }
 
-        private bool TryReadBuffer() {
+        private void PrepareBuffer() {
             // Only load if needed
             if (BufferPosition < 8) {
-                return true;
-            } else if (BufferPosition > 8) {
+                return;
+            }
+
+#if DEBUG
+            // Throw exception on insane buffer position
+            if (BufferPosition > 8) {
                 throw new Exception("Invalid position " + BufferPosition + ". Position has been offset by an incorrect value.");
             }
+#endif
 
             // Read next byte
             var buffer = Input.ReadByte();
             if (buffer < 0) {
-                return false;
+                throw new EndOfStreamException();
             }
             BufferValue = (byte)buffer;
 
             // Reset position
             BufferPosition = 0;
-
-            return true;
         }
 
 
