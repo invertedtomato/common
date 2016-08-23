@@ -21,25 +21,44 @@ namespace InvertedTomato.IO {
             return bits;
         }
 
-        public static ulong Push(ulong host, ulong bits, byte count) {
+        [Obsolete("Will be removed in a future release.")]
+        public static ulong Push(ulong host, ulong bits, byte count) { return Push(host, bits, (int)count); }
+
+        /// <summary>
+        /// Push bits onto the least-significant side of a ulong.
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="bits"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static ulong Push(ulong host, ulong bits, int count) {
             if (count > 64) {
                 throw new ArgumentOutOfRangeException("Must be between 0 and 64, not " + count + ".", "count");
             }
 
             // Add space on host
             host <<= count;
-            
+
             // Add bits
             host |= bits & (ulong.MaxValue >> 64 - count);
 
             return host;
         }
 
-        public static ulong Pop(ulong host, byte count) {
+        [Obsolete("Will be removed in a future release.")]
+        public static ulong Pop(ulong host, byte count) { return Pop(host, (int)count); }
+
+        /// <summary>
+        /// Pop bits off the least-significant side of a ulong.
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static ulong Pop(ulong host, int count) {
             if (count > 64) {
                 throw new ArgumentOutOfRangeException("Must be between 0 and 64, not " + count + ".", "count");
             }
-            
+
             // Extract bits
             var bits = host & (ulong.MaxValue >> 64 - count);
 
@@ -58,13 +77,15 @@ namespace InvertedTomato.IO {
             return ToString(value, 1);
         }
 
+        public static string ToString(ulong value, byte minBits) { return ToString(value, (int)minBits); }
+
         /// <summary>
         /// Convert a ulong to a binary string. No byte reordering - the MSB is always on the left, LSB is always on the right. A space between bytes. Padding only if required to meet minBits.
         /// </summary>
         /// <param name="value"></param>
         /// <param name="minBits"></param>
         /// <returns></returns>
-        public static string ToString(ulong value, byte minBits) {
+        public static string ToString(ulong value, int minBits) {
             var output = "";
 
             var pos = 0;

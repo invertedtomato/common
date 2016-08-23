@@ -24,7 +24,7 @@ namespace InvertedTomato.IO {
         /// <summary>
         /// Position within the currently buffered byte. Defaulted to the end of the buffer to force a new byte to be read on the next request.
         /// </summary>
-        private byte BufferPosition = 8;
+        private int BufferPosition = 8;
 
         /// <summary>
         /// Standard instantiation.
@@ -37,13 +37,16 @@ namespace InvertedTomato.IO {
 
             Input = input;
         }
-        
+
+        [Obsolete("Will be removed in a future release.")]
+        public ulong Read(byte count) { return Read((int)count); }
+
         /// <summary>
         /// Read a set of bits. This uses ulong as a 64-bit buffer (don't think of it like an integer, think of it as a bit buffer).
         /// </summary>
         /// <param name="count">Number of bits to read, starting from the least-significant-bit (right side).</param>
         /// <returns></returns>
-        public ulong Read(byte count) {
+        public ulong Read(int count) {
             if (count > 64) {
                 throw new ArgumentOutOfRangeException("Count must be between 0 and 64, not " + count + ".", "count");
             }
@@ -59,7 +62,7 @@ namespace InvertedTomato.IO {
                 PrepareBuffer();
 
                 // Calculate number of bits to read in this cycle - either the number of bits being requested, or the number of bits left in the buffer, whichever is less
-                var chunkSize = (byte)Math.Min(count, 8 - BufferPosition);
+                var chunkSize = Math.Min(count, 8 - BufferPosition);
 
                 // Make room in output for this number of bits
                 output <<= chunkSize;
