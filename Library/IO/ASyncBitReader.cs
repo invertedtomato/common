@@ -8,7 +8,7 @@ namespace InvertedTomato.IO {
         /// <summary>
         /// The method to callback when we have reached the desired number of bits. Also returns number of bits to fetch next.
         /// </summary>
-        private readonly Func<ulong, int> Output;
+        private readonly Func<ulong, int, int> Output;
 
         /// <summary>
         /// Buffer of current bits.
@@ -25,7 +25,11 @@ namespace InvertedTomato.IO {
         /// </summary>
         private int BitsWanted;
 
-        public ASyncBitReader(Func<ulong, int> output) {
+        /// <summary>
+        /// Standard instantiation.
+        /// </summary>
+        /// <param name="output">Callback to output results to. Return the number of bits to read next.</param>
+        public ASyncBitReader(Func<ulong, int, int> output) {
             if (null == output) {
                 throw new ArgumentNullException("callback");
             }
@@ -34,7 +38,7 @@ namespace InvertedTomato.IO {
             Output = output;
 
             // Seed callback
-            CallbackWrap(0);
+            CallbackWrap(0, 0);
         }
 
         /// <summary>
@@ -68,7 +72,7 @@ namespace InvertedTomato.IO {
                     Level -= BitsWanted;
 
                     // Callback value
-                    CallbackWrap(value);
+                    CallbackWrap(value, BitsWanted);
                 }
             }
         }
@@ -80,9 +84,9 @@ namespace InvertedTomato.IO {
             Level -= Level % 8;
         }
 
-        private void CallbackWrap(ulong value) {
+        private void CallbackWrap(ulong value, int count) {
             // Return value
-            BitsWanted = Output(value);
+            BitsWanted = Output(value, count);
 
             // Check sane number of bits requested next
             if (BitsWanted < 0 || BitsWanted > 64) {

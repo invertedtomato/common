@@ -10,7 +10,7 @@ namespace InvertedTomato.Common.Tests.IO {
             var position = 0;
             var results = new List<ulong>() { 0, 0, 0, 0, 0, 0, 0, 0, 1 };
 
-            var reader = new ASyncBitReader((value) => {
+            var reader = new ASyncBitReader((value, count) => {
                 var expected = results[position++];
 
                 Assert.AreEqual(expected, value, "Position #" + (position - 1));
@@ -25,7 +25,7 @@ namespace InvertedTomato.Common.Tests.IO {
             var position = 0;
             var results = new List<ulong>() { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0 };
 
-            var reader = new ASyncBitReader((value) => {
+            var reader = new ASyncBitReader((value, count) => {
                 var expected = results[position++];
 
                 Assert.AreEqual(expected, value, "Position #" + (position - 1));
@@ -40,7 +40,7 @@ namespace InvertedTomato.Common.Tests.IO {
             var position = 0;
             var results = new List<ulong>() { 0, 0, 0, 2, 0, 1 };
 
-            var reader = new ASyncBitReader((value) => {
+            var reader = new ASyncBitReader((value, count) => {
                 var expected = results[position++];
 
                 Assert.AreEqual(expected, value, "Position #" + (position - 1));
