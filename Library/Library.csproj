@@ -59,6 +59,7 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\ThreadExtensions.cs" />
     <Compile Include="Extensions\TimerExtensions.cs" />
+    <Compile Include="IO\ASyncBitReader.cs" />
     <Compile Include="IO\BitReader.cs" />
     <Compile Include="Utilities\ByteArrayUtility.cs" />
     <Compile Include="IO\BitWriter.cs" />
