@@ -1,6 +1,9 @@
 ﻿using System;
 
 namespace InvertedTomato.IO {
+    /// <summary>
+    /// Asynchronous bit reader (experimental).
+    /// </summary>
     public class ASyncBitReader {
         /// <summary>
         /// The method to callback when we have reached the desired number of bits. Also returns number of bits to fetch next.
@@ -87,46 +90,4 @@ namespace InvertedTomato.IO {
             }
         }
     }
-    /*
-    public class ASyncFibonacciUnsignedReader {
-        private readonly Action<ulong> Output;
-        private ulong Buffer;
-        private int FibPosition;
-        private bool LastBit;
-
-        public ASyncFibonacciUnsignedReader(Action<ulong> output) {
-            if (null == output) {
-                throw new ArgumentNullException("callback");
-            }
-
-            // Store
-            Output = output;
-        }
-
-        public int Input(ulong buffer) {
-            if (buffer > 0) {
-                // If double 1 bits
-                if (LastBit) {
-                    // Output value
-                    Output(Buffer);
-
-                    // Reset for next value
-                    FibPosition = 0;
-                    LastBit = false;
-                } else {
-                    // Add value to buffer
-                    Buffer += Fibonacci.Value[FibPosition];
-
-                    // Note bit for next cycle
-                    LastBit = true;
-                }
-            } else {
-                LastBit = false;
-            }
-
-            FibPosition++;
-
-            return 1;
-        }
-    }*/
 }
