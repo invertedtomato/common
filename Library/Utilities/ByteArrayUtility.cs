@@ -22,7 +22,7 @@ namespace InvertedTomato.Utilities {
 
             // Abort if input isn't sane
             if (!Binary.IsMatch(input)) {
-                throw new ArgumentException("Not valid binary.", "input");
+                throw new ArgumentException("Not valid binary (" + input.Length + " characters).", "input");
             }
 
             // Do the conversion

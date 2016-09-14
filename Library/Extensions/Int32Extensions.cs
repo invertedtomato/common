@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace InvertedTomato.Extensions {
+namespace InvertedTomato {
     public static class Int32Extensions {
         /// <summary>
         /// Converts a string to int32, returns 0 in case the input string is empty.
