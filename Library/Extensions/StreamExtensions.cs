@@ -557,7 +557,7 @@ namespace InvertedTomato {
                 throw new ArgumentNullException("target");
             }
 
-            target.Write(BitConverter.GetBytes(value), 0, 1);
+            target.Write(new byte[] { (byte)value });
         }
 
         public static void Write(this Stream target, byte value) {
@@ -565,7 +565,7 @@ namespace InvertedTomato {
                 throw new ArgumentNullException("target");
             }
 
-            target.Write(BitConverter.GetBytes(value), 0, 1);
+            target.Write(new byte[] { value });
         }
 
         public static void Write(this Stream target, short value) {
