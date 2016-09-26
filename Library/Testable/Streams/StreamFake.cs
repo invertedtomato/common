@@ -16,7 +16,7 @@ namespace InvertedTomato.Testable.Streams {
 
         public bool IsDisposed { get; private set; }
 
-        public void QueueInput(byte[] raw) {
+        public void QueueInput(byte[] raw, int delay = 200) {
             if (null == raw) {
                 throw new ArgumentNullException("raw");
             }
@@ -30,7 +30,7 @@ namespace InvertedTomato.Testable.Streams {
             InputLock.Set();
 
             // Wait
-            Thread.Sleep(200);
+            Thread.Sleep(delay);
         }
 
         public byte[] ReadOutput() {
