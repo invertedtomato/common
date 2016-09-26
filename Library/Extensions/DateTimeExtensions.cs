@@ -44,5 +44,18 @@ namespace InvertedTomato {
             // Return the week of our adjusted day
             return Calendar.GetWeekOfYear(target, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
         }
+
+        /// <summary>
+        /// Convert time to UTC.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static DateTime ToUtc(this DateTime target) {
+            if(target.Kind == DateTimeKind.Unspecified) {
+                throw new ArgumentException("Kind is currently unspecified.");
+            }
+
+            return target.ToUniversalTime();
+        }
     }
 }
