@@ -55,6 +55,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Extensions\ByteArrayExtensionTests.cs" />
+    <Compile Include="Extensions\StreamExtensionTests.cs" />
     <Compile Include="IO\BitReaderTests.cs" />
     <Compile Include="IO\BitWriterTests.cs" />
     <Compile Include="IO\BitsTests.cs" />

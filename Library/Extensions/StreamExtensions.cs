@@ -537,9 +537,8 @@ namespace InvertedTomato {
                 throw new ArgumentNullException("target");
             }
 
-            using (var r = new BinaryReader(target)) {
-                return r.ReadDouble();
-            }
+            var buffer = target.Read(8);
+            return BitConverter.ToDouble(buffer, 0);
         }
 
         public static float ReadFloat(this Stream target) {
@@ -547,9 +546,8 @@ namespace InvertedTomato {
                 throw new ArgumentNullException("target");
             }
 
-            using (var r = new BinaryReader(target)) {
-                return r.ReadSingle();
-            }
+            var buffer = target.Read(4);
+            return BitConverter.ToSingle(buffer, 0);
         }
 
         public static void Write(this Stream target, sbyte value) {
